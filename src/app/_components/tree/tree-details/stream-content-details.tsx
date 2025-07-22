@@ -11,6 +11,23 @@ import {
   fromByteArrayToHexString,
 } from "@/lib/utils";
 
+function ImagePreview({ bytes }: { bytes: Uint8Array }) {
+  const blob = new Blob([bytes], { type: "image/jpeg" });
+  const url = URL.createObjectURL(blob);
+  
+  return (
+    <div className="space-y-2">
+      <h4 className="font-semibold">Image Preview:</h4>
+      <img 
+        src={url} 
+        alt="PDF embedded image" 
+        className="max-w-full max-h-64 rounded border shadow-sm"
+        onLoad={() => URL.revokeObjectURL(url)}
+      />
+    </div>
+  );
+}
+
 function TrueTypeContext({ node }: DetailProps<StreamContent>) {
   const onDownloadClick = () => {
     const stream = node.obj.stream;
@@ -46,9 +63,24 @@ function TrueTypeContext({ node }: DetailProps<StreamContent>) {
  */
 function Context({ node }: DetailProps<StreamContent>) {
   const path = node.path;
+  const stream = node.obj.stream;
+  stream.reset();
+  let bytes = stream.getBytes();
+  
+  // Check if it's a JPEG image
+  if (stream.constructor.name === "JpegStream" || 
+      (bytes.length > 4 && bytes[0] === 0xFF && bytes[1] === 0xD8)) {
+    if (stream.constructor.name === "JpegStream") {
+      // @ts-ignore
+      bytes = stream.bytes;
+    }
+    return <ImagePreview bytes={bytes} />;
+  }
+  
   if (path.endsWith(".FontFile2.")) {
     return <TrueTypeContext node={node} />;
   }
+  
   return null;
 }
 

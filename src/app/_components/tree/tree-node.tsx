@@ -10,20 +10,27 @@ export function TreeNote(props: {
   node: TreeNode;
   selected: TreeNode | null;
   onClick: (node: TreeNode) => void;
+  forceCollapsed?: boolean;
 }) {
   const node = props.node;
 
   const expandLevel = usePDFDebuggerStore((state) => state.expandLevel());
   const [expanded, setExpanded] = useState(node.depth < expandLevel);
 
+  // Override expanded state when forceCollapsed is true
+  const isExpanded = props.forceCollapsed ? false : expanded;
   const onClick = () => {
-    setExpanded(!expanded);
+    if (!props.forceCollapsed) {
+      setExpanded(!expanded);
+    }
     props.onClick(node);
   };
 
   const onExpandClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setExpanded(!expanded);
+    if (!props.forceCollapsed) {
+      setExpanded(!expanded);
+    }
   };
 
   const onRefClick = (e: React.MouseEvent, node: TreeNode<core.Ref>) => {
@@ -34,15 +41,15 @@ export function TreeNote(props: {
     );
     if (!element) return;
 
-    element.scrollIntoView();
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
 
     // highlight the element
-    element.classList.add("bg-yellow-200");
+    element.classList.add("bg-yellow-200", "dark:bg-yellow-800");
     element.classList.add("bg-opacity-100");
     setTimeout(() => {
-      element.classList.remove("bg-yellow-200");
+      element.classList.remove("bg-yellow-200", "dark:bg-yellow-800");
       element.classList.add("bg-opacity-0");
-    }, 1000);
+    }, 2000);
   };
 
   const ref = props.node.ref;
@@ -63,12 +70,12 @@ export function TreeNote(props: {
       >
         <TreeRow
           node={node}
-          expanded={expanded}
+          expanded={isExpanded}
           onExpandClick={onExpandClick}
           onRefClick={onRefClick}
         />
       </div>
-      {expanded && (
+      {isExpanded && (
         <ul className="ml-6">
           {node.children.map((child) => (
             <li key={child.uniqueId}>
@@ -76,6 +83,7 @@ export function TreeNote(props: {
                 node={child}
                 onClick={props.onClick}
                 selected={props.selected}
+                forceCollapsed={props.forceCollapsed}
               />
             </li>
           ))}

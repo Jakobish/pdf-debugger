@@ -258,6 +258,59 @@ export class TreeNode<T extends ObjType = ObjType> {
   isNull(): this is TreeNode<null> {
     return this.obj === null;
   }
+
+  toJSON(): any {
+    const result: any = {
+      type: this.getType(),
+      path: this.path,
+      depth: this.depth,
+    };
+
+    if (this.name) result.name = this.name;
+    if (this.index !== undefined) result.index = this.index;
+    if (this.ref) result.ref = { num: this.ref.num, gen: this.ref.gen };
+
+    if (this.isDict()) {
+      result.keys = this.obj.getKeys();
+    } else if (this.isArray()) {
+      result.length = this.obj.length;
+    } else if (this.isRef()) {
+      result.value = { num: this.obj.num, gen: this.obj.gen };
+    } else if (this.isName()) {
+      result.value = this.obj.name;
+    } else if (this.isNumber() || this.isString() || this.isBoolean()) {
+      result.value = this.obj;
+    } else if (this.isNull()) {
+      result.value = null;
+    } else if (this.isStream()) {
+      result.streamInfo = {
+        dictKeys: this.obj.dict.getKeys(),
+        hasContent: true
+      };
+    } else if (this.isStreamContent()) {
+      result.contentType = "stream-content";
+    }
+
+    if (this.children.length > 0) {
+      result.children = this.children.map(child => child.toJSON());
+    }
+
+    return result;
+  }
+
+  private getType(): string {
+    if (this.isDict()) return "dict";
+    if (this.isArray()) return "array";
+    if (this.isRef()) return "ref";
+    if (this.isStream()) return "stream";
+    if (this.isStreamContent()) return "stream-content";
+    if (this.isName()) return "name";
+    if (this.isNumber()) return "number";
+    if (this.isString()) return "string";
+    if (this.isBoolean()) return "boolean";
+    if (this.isNull()) return "null";
+    return "unknown";
+  }
 }
 
 /**
@@ -308,4 +361,55 @@ export class PDFWalker {
 
     return root;
   }
+}
+
+// Search functionality
+export function filterTreeNodes(node: TreeNode, query: string): TreeNode {
+  const matchesQuery = (node: TreeNode): boolean => {
+    // Check node name
+    if (node.name && node.name.toLowerCase().includes(query)) return true;
+    
+    // Check node value for simple types
+    if (node.isString() && node.obj.toLowerCase().includes(query)) return true;
+    if (node.isName() && node.obj.name.toLowerCase().includes(query)) return true;
+    if (node.isNumber() && node.obj.toString().includes(query)) return true;
+    if (node.isBoolean() && node.obj.toString().includes(query)) return true;
+    
+    // Check reference
+    if (node.isRef() && `${node.obj.num}`.includes(query)) return true;
+    
+    // Check path
+    if (node.path.toLowerCase().includes(query)) return true;
+    
+    return false;
+  };
+
+  const filterNode = (node: TreeNode): TreeNode | null => {
+    const matches = matchesQuery(node);
+    const filteredChildren = node.children
+      .map(filterNode)
+      .filter((child): child is TreeNode => child !== null);
+
+    // Include node if it matches or has matching children
+    if (matches || filteredChildren.length > 0) {
+      const filteredNode = new TreeNode({
+        obj: node.obj,
+        name: node.name,
+        index: node.index,
+        depth: node.depth,
+        ref: node.ref,
+        parent: node.parent,
+        walker: node.walker,
+      });
+      
+      // Override children with filtered results
+      filteredNode._children = filteredChildren;
+      
+      return filteredNode;
+    }
+    
+    return null;
+  };
+
+  return filterNode(node) || node;
 }
