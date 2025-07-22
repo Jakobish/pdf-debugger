@@ -1,4 +1,5 @@
 import * as core from "@hyzyla/pdfjs-core";
+import { Download } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/button";
@@ -30,6 +31,21 @@ export function TreeScreen(props: {
   const handleCollapseAll = () => {
     setCollapseAll(!collapseAll);
   };
+
+  const handleExportJSON = () => {
+    const jsonData = root.toJSON();
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${props.name || "pdf-structure"}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   const { sidebarRef, startResizing, sidebarWidth } = useResizer();
 
   if (isSmScreen) {
@@ -42,6 +58,7 @@ export function TreeScreen(props: {
         onRowClick={onRowClick}
         collapseAll={collapseAll}
         onCollapseAll={handleCollapseAll}
+        onExportJSON={handleExportJSON}
       />
     );
   }
@@ -49,7 +66,16 @@ export function TreeScreen(props: {
   return (
     <div className="border-2 border-gray-200 rounded flex-1 flex overflow-hidden flex-row">
       <div className="overflow-y-auto sm:w-1/3 flex-1 p-2">
-        <div className="mb-3 flex justify-end">
+        <div className="mb-3 flex justify-end gap-2">
+          <Button
+            onClick={handleExportJSON}
+            variant="outline"
+            size="sm"
+            className="text-xs flex items-center gap-1"
+          >
+            <Download className="h-3 w-3" />
+            Export JSON
+          </Button>
           <Button
             onClick={handleCollapseAll}
             variant="outline"

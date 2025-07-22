@@ -1,9 +1,10 @@
 import * as core from "@hyzyla/pdfjs-core";
+import { Download } from "lucide-react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
 import { TreeNodeDetails } from "@/app/_components/tree/tree-details";
 import { TreeNote } from "@/app/_components/tree/tree-node";
-import { buttonVariants } from "@/components/button";
+import { Button, buttonVariants } from "@/components/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/dialog";
 import { TreeNode } from "@/lib/pdf-walker";
 import { cn } from "@/lib/utils";
@@ -16,10 +17,20 @@ export function TreeScreenMobile(props: {
   onRowClick: (node: TreeNode) => void;
   collapseAll: boolean;
   onCollapseAll: () => void;
+  onExportJSON: () => void;
 }) {
   return (
     <div className="flex-1 flex overflow-hidden flex-col">
-      <div className="p-2 flex justify-end border-b">
+      <div className="p-2 flex justify-end gap-2 border-b">
+        <Button
+          onClick={props.onExportJSON}
+          variant="outline"
+          size="sm"
+          className="text-xs flex items-center gap-1"
+        >
+          <Download className="h-3 w-3" />
+          Export JSON
+        </Button>
         <Button
           onClick={props.onCollapseAll}
           variant="outline"
