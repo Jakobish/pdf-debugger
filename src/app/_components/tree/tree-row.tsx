@@ -1,17 +1,21 @@
 import * as core from "@hyzyla/pdfjs-core";
-import { AiOutlineNumber } from "react-icons/ai";
-import { BsTextIndentRight } from "react-icons/bs";
-import { MdChevronRight, MdExpandMore } from "react-icons/md";
-import { PiBracketsCurlyBold, PiBracketsSquareBold } from "react-icons/pi";
-import { RiIndeterminateCircleLine } from "react-icons/ri";
 import {
-  TbArrowsSplit2,
-  TbBinary,
-  TbExternalLink,
-  TbFileUnknown,
-  TbSquareLetterF,
-} from "react-icons/tb";
-import { VscFileBinary } from "react-icons/vsc";
+  FileText,
+  Hash,
+  Layers,
+  Type,
+  Quote,
+  Square,
+  Circle,
+  Link,
+  Code,
+  ChevronRight,
+  ChevronDown,
+  HelpCircle,
+  Binary,
+  File,
+  MinusCircle,
+} from "lucide-react";
 
 import { TreeNode } from "@/lib/pdf-walker";
 
@@ -24,27 +28,20 @@ function TreeRowBase(props: {
   node: TreeNode;
   onExpandClick: (e: React.MouseEvent) => void;
 }) {
-  const getExpandIcon = () => {
-    if (props.node.children.length === 0) {
-      return <div className="min-w-[16px] min-h-[16px]"></div>;
-    }
-    return (
-      <div
-        className="min-w-[16px] min-h-[16px] flex justify-center items-center hover:bg-gray-300 rounded"
-        onClick={props.onExpandClick}
-      >
-        {props.expanded ? (
-          <MdExpandMore className="min-w-[16px] min-h-[16px]" />
-        ) : (
-          <MdChevronRight className="min-w-[16px] min-h-[16px]" />
-        )}
-      </div>
-    );
-  };
+  const ExpandIcon = props.expanded ? ChevronDown : ChevronRight;
   return (
     <>
       <div className="flex items-center gap-1 h-[24px]">
-        {getExpandIcon()}
+        {props.node.children.length > 0 ? (
+          <div
+            className="min-w-[16px] min-h-[16px] flex justify-center items-center hover:bg-gray-300 rounded"
+            onClick={props.onExpandClick}
+          >
+            <ExpandIcon className="min-w-[16px] min-h-[16px]" />
+          </div>
+        ) : (
+          <div className="min-w-[16px] min-h-[16px]"></div>
+        )}
         <props.icon
           className={`${props.iconColor} min-w-[16px] min-h-[16px]`}
         />
@@ -65,7 +62,7 @@ export function TreeRow(props: {
   if (node.isDict()) {
     return (
       <TreeRowBase
-        icon={PiBracketsCurlyBold}
+        icon={Layers}
         iconColor="text-green-600"
         name={node.name}
         expanded={expanded}
@@ -76,7 +73,7 @@ export function TreeRow(props: {
   } else if (node.isArray()) {
     return (
       <TreeRowBase
-        icon={PiBracketsSquareBold}
+        icon={Hash}
         iconColor="text-purple-600"
         name={node.name}
         expanded={expanded}
@@ -87,8 +84,8 @@ export function TreeRow(props: {
   } else if (node.isRef()) {
     return (
       <TreeRowBase
-        icon={TbExternalLink}
-        iconColor="text-magenta-600"
+        icon={Link}
+        iconColor="text-blue-600"
         name={node.name}
         value={
           <div
@@ -106,7 +103,7 @@ export function TreeRow(props: {
   } else if (node.isStream()) {
     return (
       <TreeRowBase
-        icon={VscFileBinary}
+        icon={File}
         iconColor="text-fuchsia-600"
         name={node.name}
         expanded={expanded}
@@ -117,7 +114,7 @@ export function TreeRow(props: {
   } else if (node.isStreamContent()) {
     return (
       <TreeRowBase
-        icon={TbBinary}
+        icon={Code}
         iconColor="text-gray-500"
         name={node.name}
         value={`[...stream contents...]`}
@@ -129,7 +126,7 @@ export function TreeRow(props: {
   } else if (node.isName()) {
     return (
       <TreeRowBase
-        icon={TbSquareLetterF}
+        icon={Type}
         iconColor="text-yellow-600"
         name={node.name}
         value={`/${node.obj.name}`}
@@ -141,7 +138,7 @@ export function TreeRow(props: {
   } else if (node.isNumber()) {
     return (
       <TreeRowBase
-        icon={AiOutlineNumber}
+        icon={Hash}
         iconColor="text-blue-600"
         name={node.name}
         value={node.obj.toString()}
@@ -153,7 +150,7 @@ export function TreeRow(props: {
   } else if (node.isString()) {
     return (
       <TreeRowBase
-        icon={BsTextIndentRight}
+        icon={Quote}
         iconColor="text-red-600"
         name={node.name}
         value={node.obj}
@@ -165,7 +162,7 @@ export function TreeRow(props: {
   } else if (node.isBoolean()) {
     return (
       <TreeRowBase
-        icon={TbArrowsSplit2}
+        icon={Square}
         iconColor="text-green-600"
         name={node.name}
         value={node.obj.toString()}
@@ -177,7 +174,7 @@ export function TreeRow(props: {
   } else if (node.isNull()) {
     return (
       <TreeRowBase
-        icon={RiIndeterminateCircleLine}
+        icon={MinusCircle}
         iconColor="text-gray-500"
         name={node.name}
         value={`null`}
@@ -189,7 +186,7 @@ export function TreeRow(props: {
   } else {
     return (
       <TreeRowBase
-        icon={TbFileUnknown}
+        icon={HelpCircle}
         iconColor="text-gray-500"
         name={node.name}
         value={`[unknown]`}

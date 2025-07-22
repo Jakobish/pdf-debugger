@@ -10,7 +10,7 @@ import { StreamDetails } from "@/app/_components/tree/tree-details/stream-detail
 import { StringDetails } from "@/app/_components/tree/tree-details/string-details";
 import { TreeNode } from "@/lib/pdf-walker";
 
-export function TreeNodeDetails(props: { node: TreeNode }) {
+export function TreeDetails(props: { node: TreeNode }) {
   const node = props.node;
   const getDtails = () => {
     if (node.isDict()) {

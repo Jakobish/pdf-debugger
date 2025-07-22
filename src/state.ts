@@ -1,5 +1,6 @@
 import * as core from "@hyzyla/pdfjs-core";
 import { create } from "zustand";
+import { PDFWalker, TreeNode, filterTreeNodes } from "@/lib/pdf-walker";
 
 interface BaseScreen {
   screen: string;
@@ -26,6 +27,10 @@ interface PDFScreen extends BaseScreen {
 type Screen = DropzoneScreen | LoadingScreen | PDFScreen;
 
 type PDFDebuggerStore = Screen & {
+  pdfDocument: core.PDFDocument | null;
+  pdfName: string | null;
+  rootNode: TreeNode | null;
+  selectedNode: TreeNode | null;
   onPDFDrop: (blob: File) => void;
   onExampleClick: () => void;
   onPDFLoad: (options: {
@@ -36,10 +41,16 @@ type PDFDebuggerStore = Screen & {
   }) => void;
   reset: () => void;
   expandLevel: () => number;
+  onNodeClick: (node: TreeNode) => void;
+  onSearch: (query: string) => void;
 };
 
 export const usePDFDebuggerStore = create<PDFDebuggerStore>()((set, get) => ({
   screen: "dropzone",
+  pdfDocument: null,
+  pdfName: null,
+  rootNode: null,
+  selectedNode: null,
   onPDFDrop: (file) => {
     set({
       screen: "loading",
@@ -55,20 +66,42 @@ export const usePDFDebuggerStore = create<PDFDebuggerStore>()((set, get) => ({
     });
   },
   onPDFLoad: (options) => {
+    const walker = new PDFWalker({ pdf: options.pdfDocument });
+    const root = walker.start();
     set({
       screen: "pdf",
       pdfName: options.pdfName,
       pdfBytes: options.pdfBytes,
       pdfDocument: options.pdfDocument,
       isExample: options.isExample,
+      rootNode: root,
+      selectedNode: null,
     });
   },
   reset: () => {
     set({
       screen: "dropzone",
+      pdfDocument: null,
+      pdfName: null,
+      rootNode: null,
+      selectedNode: null,
     });
   },
   expandLevel: () => {
     return 6;
+  },
+  onNodeClick: (node) => {
+    set((state) => ({
+      selectedNode: state.selectedNode?.path === node.path ? null : node,
+    }));
+  },
+  onSearch: (query) => {
+    set((state) => {
+      if (!state.rootNode) return state;
+      const filteredRoot = query.trim()
+        ? filterTreeNodes(state.rootNode, query.toLowerCase())
+        : state.rootNode;
+      return { rootNode: filteredRoot };
+    });
   },
 }));

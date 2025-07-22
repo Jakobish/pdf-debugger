@@ -6,15 +6,11 @@ import { TreeRow } from "@/app/_components/tree/tree-row";
 import { TreeNode } from "@/lib/pdf-walker";
 import { usePDFDebuggerStore } from "@/state";
 
-export function TreeNote(props: {
-  node: TreeNode;
-  selected: TreeNode | null;
-  onClick: (node: TreeNode) => void;
-  forceCollapsed?: boolean;
-}) {
+export function TreeNote(props: { node: TreeNode; forceCollapsed?: boolean }) {
   const node = props.node;
+  const store = usePDFDebuggerStore();
 
-  const expandLevel = usePDFDebuggerStore((state) => state.expandLevel());
+  const expandLevel = store.expandLevel();
   const [expanded, setExpanded] = useState(node.depth < expandLevel);
 
   // Override expanded state when forceCollapsed is true
@@ -23,7 +19,7 @@ export function TreeNote(props: {
     if (!props.forceCollapsed) {
       setExpanded(!expanded);
     }
-    props.onClick(node);
+    store.onNodeClick(node);
   };
 
   const onExpandClick = (e: React.MouseEvent) => {
@@ -54,7 +50,7 @@ export function TreeNote(props: {
 
   const ref = props.node.ref;
 
-  const isSelected = props.selected?.path === node.path;
+  const isSelected = store.selectedNode?.path === node.path;
   return (
     <div>
       <div
@@ -79,12 +75,7 @@ export function TreeNote(props: {
         <ul className="ml-6">
           {node.children.map((child) => (
             <li key={child.uniqueId}>
-              <TreeNote
-                node={child}
-                onClick={props.onClick}
-                selected={props.selected}
-                forceCollapsed={props.forceCollapsed}
-              />
+              <TreeNote node={child} forceCollapsed={props.forceCollapsed} />
             </li>
           ))}
         </ul>

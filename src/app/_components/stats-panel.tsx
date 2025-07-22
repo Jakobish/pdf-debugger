@@ -10,7 +10,7 @@ export function StatsPanel({ root }: StatsPanelProps) {
   const stats = calculateStats(root);
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <StatCard
         icon={FileText}
         label="Total Objects"
@@ -39,7 +39,12 @@ export function StatsPanel({ root }: StatsPanelProps) {
   );
 }
 
-function StatCard({ icon: Icon, label, value, color }: {
+function StatCard({
+  icon: Icon,
+  label,
+  value,
+  color,
+}: {
   icon: React.ComponentType<any>;
   label: string;
   value: number;
