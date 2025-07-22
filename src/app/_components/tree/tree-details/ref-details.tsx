@@ -22,6 +22,25 @@ export function RefDetails({ node }: DetailProps<core.Ref>) {
       )}
       <h3>Value:</h3>
       <pre>{ref}</pre>
+      <button
+        onClick={() => {
+          const element = document.getElementById(
+            `ref-${node.obj.num}-${node.obj.gen}`,
+          );
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "center" });
+            element.classList.add("bg-yellow-200", "dark:bg-yellow-800");
+            element.classList.add("bg-opacity-100");
+            setTimeout(() => {
+              element.classList.remove("bg-yellow-200", "dark:bg-yellow-800");
+              element.classList.add("bg-opacity-0");
+            }, 2000);
+          }
+        }}
+        className="text-blue-500 hover:underline"
+      >
+        Go to Reference
+      </button>
       <h3>Path:</h3>
       <pre>{node.path}</pre>
     </>

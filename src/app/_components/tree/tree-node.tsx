@@ -3,10 +3,21 @@ import classNames from "classnames";
 import { useState } from "react";
 
 import { TreeRow } from "@/app/_components/tree/tree-row";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/context-menu";
 import { TreeNode } from "@/lib/pdf-walker";
 import { usePDFDebuggerStore } from "@/state";
 
-export function TreeNote(props: { node: TreeNode; forceCollapsed?: boolean }) {
+export function TreeNote(props: {
+  node: TreeNode;
+  forceCollapsed?: boolean;
+  selected?: TreeNode | null;
+  onNodeClick?: (node: TreeNode) => void;
+}) {
   const node = props.node;
   const store = usePDFDebuggerStore();
 
@@ -52,25 +63,52 @@ export function TreeNote(props: { node: TreeNode; forceCollapsed?: boolean }) {
 
   const isSelected = store.selectedNode?.path === node.path;
   return (
-    <div>
-      <div
-        id={ref ? `ref-${ref.num}-${ref.gen}` : undefined}
-        onClick={onClick}
-        className={classNames(
-          "cursor-pointer hover:bg-gray-200 px-2 rounded flex gap-1 min-h-6 flex-row items-start  transition-all bg-opacity-0",
-          {
-            "bg-gray-100": isSelected,
-            "bg-opacity-100": isSelected,
-          },
-        )}
-      >
-        <TreeRow
-          node={node}
-          expanded={isExpanded}
-          onExpandClick={onExpandClick}
-          onRefClick={onRefClick}
-        />
-      </div>
+    <>
+      <ContextMenu>
+        <ContextMenuTrigger asChild>
+          <div
+            id={ref ? `ref-${ref.num}-${ref.gen}` : undefined}
+            onClick={onClick}
+            className={classNames(
+              "cursor-pointer hover:bg-gray-200 px-2 rounded flex gap-1 min-h-6 flex-row items-start  transition-all bg-opacity-0",
+              {
+                "bg-gray-100": isSelected,
+                "bg-opacity-100": isSelected,
+              },
+            )}
+          >
+            <TreeRow
+              node={node}
+              expanded={isExpanded}
+              onExpandClick={onExpandClick}
+              onRefClick={onRefClick}
+            />
+          </div>
+        </ContextMenuTrigger>
+        <ContextMenuContent>
+          <ContextMenuItem
+            onClick={() => navigator.clipboard.writeText(node.path)}
+          >
+            Copy Path
+          </ContextMenuItem>
+          {node.obj?.value !== undefined && (
+            <ContextMenuItem
+              onClick={() =>
+                navigator.clipboard.writeText(node.obj?.value?.toString() || "")
+              }
+            >
+              Copy Value
+            </ContextMenuItem>
+          )}
+          {node.isRef() && (
+            <ContextMenuItem
+              onClick={(e) => onRefClick(e, node as TreeNode<core.Ref>)}
+            >
+              Go to Reference
+            </ContextMenuItem>
+          )}
+        </ContextMenuContent>
+      </ContextMenu>
       {isExpanded && (
         <ul className="ml-6">
           {node.children.map((child) => (
@@ -80,6 +118,6 @@ export function TreeNote(props: { node: TreeNode; forceCollapsed?: boolean }) {
           ))}
         </ul>
       )}
-    </div>
+    </>
   );
 }

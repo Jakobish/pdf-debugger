@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { MdFileDownload } from "react-icons/md";
 
 import { DetailProps } from "@/app/_components/tree/tree-details/_types";
@@ -14,14 +15,17 @@ import {
 function ImagePreview({ bytes }: { bytes: Uint8Array }) {
   const blob = new Blob([bytes], { type: "image/jpeg" });
   const url = URL.createObjectURL(blob);
-  
+
   return (
     <div className="space-y-2">
       <h4 className="font-semibold">Image Preview:</h4>
-      <img 
-        src={url} 
-        alt="PDF embedded image" 
-        className="max-w-full max-h-64 rounded border shadow-sm"
+      <Image
+        src={url}
+        alt="PDF embedded image"
+        width={0}
+        height={0}
+        sizes="100vw"
+        className="max-w-full max-h-64 rounded border shadow-sm w-auto h-auto"
         onLoad={() => URL.revokeObjectURL(url)}
       />
     </div>
@@ -66,21 +70,23 @@ function Context({ node }: DetailProps<StreamContent>) {
   const stream = node.obj.stream;
   stream.reset();
   let bytes = stream.getBytes();
-  
+
   // Check if it's a JPEG image
-  if (stream.constructor.name === "JpegStream" || 
-      (bytes.length > 4 && bytes[0] === 0xFF && bytes[1] === 0xD8)) {
+  if (
+    stream.constructor.name === "JpegStream" ||
+    (bytes.length > 4 && bytes[0] === 0xff && bytes[1] === 0xd8)
+  ) {
     if (stream.constructor.name === "JpegStream") {
       // @ts-ignore
       bytes = stream.bytes;
     }
     return <ImagePreview bytes={bytes} />;
   }
-  
+
   if (path.endsWith(".FontFile2.")) {
     return <TrueTypeContext node={node} />;
   }
-  
+
   return null;
 }
 
@@ -113,13 +119,13 @@ export function StreamContentDetails({ node }: DetailProps<StreamContent>) {
           <TabsTrigger value="hex">Hex</TabsTrigger>
         </TabsList>
         <TabsContent value="unicode">
-          <CodeBlock code={frmoByteArrayToUnicode(bytes)} />
+          <CodeBlock code={frmoByteArrayToUnicode(bytes)} language="text" />
         </TabsContent>
         <TabsContent value="base64">
-          <CodeBlock code={fromByteArrayToBase64(bytes)} />
+          <CodeBlock code={fromByteArrayToBase64(bytes)} language="text" />
         </TabsContent>
         <TabsContent value="hex">
-          <CodeBlock code={fromByteArrayToHexString(bytes)} />
+          <CodeBlock code={fromByteArrayToHexString(bytes)} language="text" />
         </TabsContent>
       </Tabs>
       <h3>Path</h3>

@@ -1,6 +1,7 @@
 import * as core from "@hyzyla/pdfjs-core";
 import { create } from "zustand";
-import { PDFWalker, TreeNode, filterTreeNodes } from "@/lib/pdf-walker";
+
+import { filterTreeNodes,PDFWalker, TreeNode } from "@/lib/pdf-walker";
 
 interface BaseScreen {
   screen: string;
@@ -43,9 +44,10 @@ type PDFDebuggerStore = Screen & {
   expandLevel: () => number;
   onNodeClick: (node: TreeNode) => void;
   onSearch: (query: string) => void;
+  onStatClick: (type: string) => void;
 };
 
-export const usePDFDebuggerStore = create<PDFDebuggerStore>()((set, get) => ({
+export const usePDFDebuggerStore = create<PDFDebuggerStore>()((set) => ({
   screen: "dropzone",
   pdfDocument: null,
   pdfName: null,
@@ -91,13 +93,34 @@ export const usePDFDebuggerStore = create<PDFDebuggerStore>()((set, get) => ({
     return 6;
   },
   onNodeClick: (node) => {
-    set((state) => ({
-      selectedNode: state.selectedNode?.path === node.path ? null : node,
-    }));
+    set({ selectedNode: node });
   },
   onSearch: (query) => {
     set((state) => {
       if (!state.rootNode) return state;
+      const filteredRoot = query.trim()
+        ? filterTreeNodes(state.rootNode, query.toLowerCase())
+        : state.rootNode;
+      return { rootNode: filteredRoot };
+    });
+  },
+  onStatClick: (type: string) => {
+    set((state) => {
+      if (!state.rootNode) return state;
+      let query = "";
+      switch (type) {
+        case "dictionaries":
+          query = "type:dict";
+          break;
+        case "arrays":
+          query = "type:array";
+          break;
+        case "totalObjects":
+        case "maxDepth":
+        default:
+          query = "";
+          break;
+      }
       const filteredRoot = query.trim()
         ? filterTreeNodes(state.rootNode, query.toLowerCase())
         : state.rootNode;

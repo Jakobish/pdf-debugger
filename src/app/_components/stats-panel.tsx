@@ -4,9 +4,10 @@ import { TreeNode } from "@/lib/pdf-walker";
 
 interface StatsPanelProps {
   root: TreeNode;
+  onStatClick: (type: string) => void;
 }
 
-export function StatsPanel({ root }: StatsPanelProps) {
+export function StatsPanel({ root, onStatClick }: StatsPanelProps) {
   const stats = calculateStats(root);
 
   return (
@@ -16,24 +17,28 @@ export function StatsPanel({ root }: StatsPanelProps) {
         label="Total Objects"
         value={stats.totalObjects}
         color="text-blue-600"
+        onClick={() => onStatClick("totalObjects")}
       />
       <StatCard
         icon={Layers}
         label="Dictionaries"
         value={stats.dictionaries}
         color="text-green-600"
+        onClick={() => onStatClick("dictionaries")}
       />
       <StatCard
         icon={Hash}
         label="Arrays"
         value={stats.arrays}
         color="text-purple-600"
+        onClick={() => onStatClick("arrays")}
       />
       <StatCard
         icon={BarChart3}
         label="Max Depth"
         value={stats.maxDepth}
         color="text-orange-600"
+        onClick={() => onStatClick("maxDepth")}
       />
     </div>
   );
@@ -44,14 +49,19 @@ function StatCard({
   label,
   value,
   color,
+  onClick,
 }: {
   icon: React.ComponentType<any>;
   label: string;
   value: number;
   color: string;
+  onClick: () => void;
 }) {
   return (
-    <div className="glass-effect rounded-lg p-4 hover:scale-105 transition-transform duration-300">
+    <div
+      className="glass-effect rounded-lg p-4 hover:scale-105 transition-transform duration-300 cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex items-center gap-3">
         <div className={`p-2 rounded-lg bg-muted/50`}>
           <Icon className={`h-4 w-4 ${color}`} />

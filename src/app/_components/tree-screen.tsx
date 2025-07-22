@@ -1,16 +1,11 @@
-import { filterTreeNodes } from "@/lib/pdf-walker";
 import * as core from "@hyzyla/pdfjs-core";
 import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
 
-import { Breadcrumb } from "@/app/_components/breadcrumb";
-import { SearchBar } from "@/app/_components/search-bar";
-import { StatsPanel } from "@/app/_components/stats-panel";
-import { Button } from "@/components/button";
-import { TreeDetails } from "@/app/_components/tree/tree-details";
 import { TreeNote } from "@/app/_components/tree/tree-node";
 import { TreeScreenMobile } from "@/app/_components/tree-screen.mobile";
-import { PDFWalker, TreeNode } from "@/lib/pdf-walker";
+import { Button } from "@/components/button";
+import { filterTreeNodes } from "@/lib/pdf-walker";
 import { useMediaQuery } from "@/lib/use-media-query-hook";
 import { usePDFDebuggerStore } from "@/state";
 

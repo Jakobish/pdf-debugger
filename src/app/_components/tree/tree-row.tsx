@@ -1,20 +1,17 @@
 import * as core from "@hyzyla/pdfjs-core";
 import {
-  FileText,
+  ChevronDown,
+  ChevronRight,
+  Code,
+  File,
   Hash,
+  HelpCircle,
   Layers,
-  Type,
+  Link,
+  MinusCircle,
   Quote,
   Square,
-  Circle,
-  Link,
-  Code,
-  ChevronRight,
-  ChevronDown,
-  HelpCircle,
-  Binary,
-  File,
-  MinusCircle,
+  Type,
 } from "lucide-react";
 
 import { TreeNode } from "@/lib/pdf-walker";

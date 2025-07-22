@@ -3,7 +3,7 @@ import { MdCopyAll, MdExpand } from "react-icons/md";
 
 import { Button } from "@/components/button";
 
-export const CodeBlock = (props: { code: string }) => {
+export const CodeBlock = (props: { code: string; language?: string }) => {
   const [isExpanded, setExpanded] = useState(false);
 
   const onCopy = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -33,12 +33,12 @@ export const CodeBlock = (props: { code: string }) => {
   return (
     <div className="flex flex-col" style={blockStyle}>
       <pre
-        className="mt-0 mb-1"
+        className={`mt-0 mb-1 language-${props.language || "text"}`}
         style={{
           overflowWrap: "anywhere",
         }}
       >
-        {props.code}
+        <code>{props.code}</code>
       </pre>
       <div className="flex gap-2 self-end">
         <Button

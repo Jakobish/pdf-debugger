@@ -13,6 +13,19 @@ type ObjType =
   | null
   | unknown;
 
+export type TreeNodeType =
+  | "array"
+  | "boolean"
+  | "dict"
+  | "name"
+  | "null"
+  | "number"
+  | "ref"
+  | "stream"
+  | "stream-content"
+  | "string"
+  | "unknown";
+
 export function isDict(obj: ObjType): obj is core.Dict {
   return core.isDict(obj);
 }
@@ -285,14 +298,14 @@ export class TreeNode<T extends ObjType = ObjType> {
     } else if (this.isStream()) {
       result.streamInfo = {
         dictKeys: this.obj.dict.getKeys(),
-        hasContent: true
+        hasContent: true,
       };
     } else if (this.isStreamContent()) {
       result.contentType = "stream-content";
     }
 
     if (this.children.length > 0) {
-      result.children = this.children.map(child => child.toJSON());
+      result.children = this.children.map((child) => child.toJSON());
     }
 
     return result;
@@ -368,19 +381,20 @@ export function filterTreeNodes(node: TreeNode, query: string): TreeNode {
   const matchesQuery = (node: TreeNode): boolean => {
     // Check node name
     if (node.name && node.name.toLowerCase().includes(query)) return true;
-    
+
     // Check node value for simple types
     if (node.isString() && node.obj.toLowerCase().includes(query)) return true;
-    if (node.isName() && node.obj.name.toLowerCase().includes(query)) return true;
+    if (node.isName() && node.obj.name.toLowerCase().includes(query))
+      return true;
     if (node.isNumber() && node.obj.toString().includes(query)) return true;
     if (node.isBoolean() && node.obj.toString().includes(query)) return true;
-    
+
     // Check reference
     if (node.isRef() && `${node.obj.num}`.includes(query)) return true;
-    
+
     // Check path
     if (node.path.toLowerCase().includes(query)) return true;
-    
+
     return false;
   };
 
@@ -401,13 +415,13 @@ export function filterTreeNodes(node: TreeNode, query: string): TreeNode {
         parent: node.parent,
         walker: node.walker,
       });
-      
+
       // Override children with filtered results
       filteredNode._children = filteredChildren;
-      
+
       return filteredNode;
     }
-    
+
     return null;
   };
 

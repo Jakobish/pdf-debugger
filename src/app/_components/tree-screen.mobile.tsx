@@ -2,7 +2,16 @@ import * as core from "@hyzyla/pdfjs-core";
 import { Download } from "lucide-react";
 import { MdKeyboardArrowDown } from "react-icons/md";
 
-import { TreeNodeDetails } from "@/app/_components/tree/tree-details";
+import { ArrayDetails } from "@/app/_components/tree/tree-details/array-details";
+import { BooleanDetails } from "@/app/_components/tree/tree-details/boolean-details";
+import { DictDetails } from "@/app/_components/tree/tree-details/dict-details";
+import { NameDetail } from "@/app/_components/tree/tree-details/name-details";
+import { NullDetails } from "@/app/_components/tree/tree-details/null-details";
+import { NumberDetails } from "@/app/_components/tree/tree-details/number-details";
+import { RefDetails } from "@/app/_components/tree/tree-details/ref-details";
+import { StreamContentDetails } from "@/app/_components/tree/tree-details/stream-content-details";
+import { StreamDetails } from "@/app/_components/tree/tree-details/stream-details";
+import { StringDetails } from "@/app/_components/tree/tree-details/string-details";
 import { TreeNote } from "@/app/_components/tree/tree-node";
 import { Button, buttonVariants } from "@/components/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/dialog";
@@ -31,7 +40,7 @@ export function TreeScreenMobile(props: {
       <div className="p-2 border-b">
         <StatsPanel root={props.root} />
       </div>
-      
+
       <div className="p-2 flex justify-end gap-2 border-b">
         <SearchBar
           onSearch={props.onSearch}
@@ -65,8 +74,8 @@ export function TreeScreenMobile(props: {
         />
         <TreeNote
           node={props.root}
-          onClick={props.onRowClick}
           selected={props.selected}
+          onNodeClick={props.onRowClick}
           forceCollapsed={props.collapseAll}
         />
       </div>
@@ -86,7 +95,40 @@ export function TreeScreenMobile(props: {
                 "lg:max-w-screen-lg overflow-y-scroll max-h-[100dvh] min-h-[100dvh]"
               }
             >
-              <TreeNodeDetails node={props.selected} />
+              {props.selected && (
+                <>
+                  {props.selected.type === "array" && (
+                    <ArrayDetails node={props.selected} />
+                  )}
+                  {props.selected.type === "boolean" && (
+                    <BooleanDetails node={props.selected} />
+                  )}
+                  {props.selected.type === "dict" && (
+                    <DictDetails node={props.selected} />
+                  )}
+                  {props.selected.type === "name" && (
+                    <NameDetail node={props.selected} />
+                  )}
+                  {props.selected.type === "null" && (
+                    <NullDetails node={props.selected} />
+                  )}
+                  {props.selected.type === "number" && (
+                    <NumberDetails node={props.selected} />
+                  )}
+                  {props.selected.type === "ref" && (
+                    <RefDetails node={props.selected} />
+                  )}
+                  {props.selected.type === "stream" && (
+                    <StreamDetails node={props.selected} />
+                  )}
+                  {props.selected.type === "stream-content" && (
+                    <StreamContentDetails node={props.selected} />
+                  )}
+                  {props.selected.type === "string" && (
+                    <StringDetails node={props.selected} />
+                  )}
+                </>
+              )}
             </DialogContent>
           </Dialog>
         </>

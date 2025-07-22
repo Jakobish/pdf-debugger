@@ -1,18 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/resizable"; // Assuming resizable components exist or will be created
-import { TreeScreen } from "@/app/_components/tree-screen";
-import { StatsPanel } from "@/app/_components/stats-panel";
-import { TreeNode } from "@/lib/pdf-walker"; // Assuming TreeNode is defined here or similar
+
 import { Breadcrumb } from "@/app/_components/breadcrumb";
 import { SearchBar } from "@/app/_components/search-bar";
-import { usePDFDebuggerStore } from "@/state";
+import { StatsPanel } from "@/app/_components/stats-panel";
 import { TreeDetails } from "@/app/_components/tree/tree-details";
+import { TreeScreen } from "@/app/_components/tree-screen";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/resizable"; // Assuming resizable components exist or will be created
+import { usePDFDebuggerStore } from "@/state";
 
 interface PdfViewerScreenProps {
   pdf: any; // Replace with actual PDF document type
@@ -33,12 +33,20 @@ export function PdfViewerScreen({ pdf, name }: PdfViewerScreenProps) {
     store.onSearch("");
   };
 
+  const handleStatClick = (type: string) => {
+    store.onStatClick(type);
+  };
+
   return (
     <ResizablePanelGroup
       direction="horizontal"
       className="flex-1 overflow-hidden"
     >
-      <ResizablePanel defaultSize={30} minSize={20} className="flex flex-col">
+      <ResizablePanel
+        defaultSize={{ width: 30 }}
+        minSize={{ width: 20 }}
+        className="flex flex-col"
+      >
         <div className="p-2 border-b">
           <SearchBar
             query={searchQuery}
@@ -57,9 +65,15 @@ export function PdfViewerScreen({ pdf, name }: PdfViewerScreenProps) {
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={70} minSize={30} className="flex flex-col">
+      <ResizablePanel
+        defaultSize={{ width: 70 }}
+        minSize={{ width: 30 }}
+        className="flex flex-col"
+      >
         <div className="p-2 border-b">
-          {store.rootNode && <StatsPanel root={store.rootNode} />}
+          {store.rootNode && (
+            <StatsPanel root={store.rootNode} onStatClick={handleStatClick} />
+          )}
         </div>
         <div className="flex-1 overflow-y-auto p-2">
           {store.selectedNode ? (

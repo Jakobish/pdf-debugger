@@ -64,10 +64,13 @@ export function SourceViewer() {
           )}
           {store.screen === "loading" && (
             <div className="flex-1 flex items-center justify-center">
-              <div className="text-center space-y-4">
-                <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
-                <p className="text-lg text-muted-foreground">
+              <div className="text-center space-y-4 p-8 rounded-lg glass-effect border border-primary/20 shadow-lg">
+                <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+                <p className="text-xl font-semibold text-foreground">
                   Processing PDF...
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  This might take a moment for large files.
                 </p>
               </div>
             </div>

@@ -1,7 +1,7 @@
 "use client";
 import { FileUp, Sparkles } from "lucide-react";
 import { useCallback, useState } from "react";
-import { useDropzone, FileRejection } from "react-dropzone";
+import { FileRejection,useDropzone } from "react-dropzone";
 
 import { cn } from "@/lib/utils";
 
