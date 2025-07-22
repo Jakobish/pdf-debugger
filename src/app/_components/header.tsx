@@ -1,8 +1,9 @@
 import { FileText } from "lucide-react";
 
+import { Button } from "@/components/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-export function Header(props: { onClick: () => void }) {
+export function Header(props: { onClick: () => void; showHomeButton?: boolean }) {
   return (
     <header className="flex items-center justify-between w-full">
       <div 
@@ -16,7 +17,19 @@ export function Header(props: { onClick: () => void }) {
           PDF Debugger
         </h1>
       </div>
-      <ThemeToggle />
+      <div className="flex items-center gap-3">
+        {props.showHomeButton && (
+          <Button
+            onClick={props.onClick}
+            variant="outline"
+            size="sm"
+            className="glass-effect hover:bg-white/20 dark:hover:bg-white/10 transition-all duration-300"
+          >
+            Start Over
+          </Button>
+        )}
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

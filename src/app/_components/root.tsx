@@ -54,7 +54,7 @@ export function SourceViewer() {
     <main className="relative min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted/20 bg-grid-pattern">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5" />
       <div className="relative z-10 p-6 gap-6 flex flex-col h-[100dvh] max-h-[100dvh]">
-        <Header onClick={onHeaderClick} />
+        <Header onClick={onHeaderClick} showHomeButton={store.screen !== "dropzone"} />
         <div className="flex-1 flex overflow-hidden">
           {store.screen === "dropzone" && (
             <DropzoneScreen onDrop={onPDFDrop} onExample={onExamplePDFDrop} />
