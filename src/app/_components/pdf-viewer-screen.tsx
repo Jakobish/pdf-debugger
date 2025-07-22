@@ -43,9 +43,9 @@ export function PdfViewerScreen({ pdf, name }: PdfViewerScreenProps) {
       className="flex-1 overflow-hidden"
     >
       <ResizablePanel
-        defaultSize={{ width: 30 }}
-        minSize={{ width: 20 }}
-        className="flex flex-col"
+        defaultSize={{ width: 50 }} // Set to 50% width
+        minSize={{ width: 30 }} // Keep reasonable min width
+        className="flex flex-col min-w-[320px]" // Wider min-w for better usability
       >
         <div className="p-2 border-b">
           <SearchBar
@@ -66,9 +66,9 @@ export function PdfViewerScreen({ pdf, name }: PdfViewerScreenProps) {
       </ResizablePanel>
       <ResizableHandle withHandle />
       <ResizablePanel
-        defaultSize={{ width: 70 }}
+        defaultSize={{ width: 50 }} // Set to 50% width
         minSize={{ width: 30 }}
-        className="flex flex-col"
+        className="flex flex-col min-w-[320px]" // Wider min-w for right panel
       >
         <div className="p-2 border-b">
           {store.rootNode && (
