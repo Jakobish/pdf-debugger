@@ -1,8 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { Sparkles } from "lucide-react";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { Breadcrumb } from "@/app/_components/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { SearchBar } from "@/app/_components/search-bar";
 import { StatsPanel } from "@/app/_components/stats-panel";
 import { TreeDetails } from "@/app/_components/tree/tree-details";
@@ -38,53 +42,68 @@ export function PdfViewerScreen({ pdf, name }: PdfViewerScreenProps) {
   };
 
   return (
-    <ResizablePanelGroup
-      direction="horizontal"
-      className="flex-1 overflow-hidden"
-    >
-      <ResizablePanel
-        defaultSize={{ width: 50 }} // Set to 50% width
-        minSize={{ width: 30 }} // Keep reasonable min width
-        className="flex flex-col min-w-[320px]" // Wider min-w for better usability
-      >
-        <div className="p-2 border-b">
-          <SearchBar
-            query={searchQuery}
-            onSearch={handleSearch}
-            onClear={handleClearSearch}
-            className="mb-2"
-          />
-          <Breadcrumb
-            selectedNode={store.selectedNode}
-            onNodeClick={store.onNodeClick}
-            className="mb-2"
-          />
-        </div>
-        <div className="flex-1 overflow-y-auto p-2">
-          <TreeScreen pdf={pdf} name={name} searchQuery={searchQuery} />
-        </div>
-      </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel
-        defaultSize={{ width: 50 }} // Set to 50% width
-        minSize={{ width: 30 }}
-        className="flex flex-col min-w-[320px]" // Wider min-w for right panel
-      >
-        <div className="p-2 border-b">
-          {store.rootNode && (
-            <StatsPanel root={store.rootNode} onStatClick={handleStatClick} />
-          )}
-        </div>
-        <div className="flex-1 overflow-y-auto p-2">
-          {store.selectedNode ? (
-            <TreeDetails node={store.selectedNode} />
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              Select a node to view its details.
+    <Card className="w-full h-full bg-background text-foreground shadow-xl border border-border rounded-xl">
+      <CardContent className="p-0 h-full">
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="flex-1 overflow-hidden h-full"
+        >
+          <ResizablePanel
+            defaultSize={{ width: 50 }}
+            minSize={{ width: 30 }}
+            className="flex flex-col min-w-[320px] bg-card rounded-l-xl shadow-md border-r border-border"
+          >
+            <div className="p-4 border-b border-border bg-card-foreground rounded-tl-xl">
+              <Input
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Search..."
+                className="mb-2"
+              />
+              <Breadcrumb
+                selectedNode={store.selectedNode}
+                onNodeClick={store.onNodeClick}
+                className="mb-2"
+              />
             </div>
-          )}
-        </div>
-      </ResizablePanel>
-    </ResizablePanelGroup>
+            <div className="flex-1 overflow-y-auto p-4">
+              <TreeScreen pdf={pdf} name={name} searchQuery={searchQuery} />
+            </div>
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel
+            defaultSize={{ width: 50 }}
+            minSize={{ width: 30 }}
+            className="flex flex-col min-w-[320px] bg-card rounded-r-xl shadow-md border-l border-border"
+          >
+            <div className="p-4 border-b border-border bg-card-foreground rounded-tr-xl flex items-center gap-2">
+              <Sparkles className="text-primary w-5 h-5 animate-subtle-pulse" />
+              <span className="font-semibold text-lg">Stats & Details</span>
+              {store.rootNode && (
+                <StatsPanel
+                  root={store.rootNode}
+                  onStatClick={handleStatClick}
+                />
+              )}
+            </div>
+            <div className="flex-1 overflow-y-auto p-4 flex items-center justify-center">
+              {store.selectedNode ? (
+                <TreeDetails node={store.selectedNode} />
+              ) : (
+                <div className="flex flex-col items-center justify-center gap-2 text-muted-foreground">
+                  <Sparkles className="w-8 h-8 text-primary animate-gentle-float" />
+                  <span className="text-xl font-semibold">
+                    Select a node to view details
+                  </span>
+                  <span className="text-sm">
+                    Tip: Click any item in the tree to see its info here!
+                  </span>
+                </div>
+              )}
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
+      </CardContent>
+    </Card>
   );
 }
