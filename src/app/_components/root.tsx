@@ -51,18 +51,28 @@ export function SourceViewer() {
   };
 
   return (
-    <main className="p-3 gap-3 flex flex-col h-[100dvh] max-h-[100dvh]">
-      <Header onClick={onHeaderClick} />
-      <div className="flex-1 flex overflow-hidden">
-        {store.screen === "dropzone" && (
-          <DropzoneScreen onDrop={onPDFDrop} onExample={onExamplePDFDrop} />
-        )}
-        {store.screen === "loading" && <div>Loading...</div>}
-        {store.screen === "pdf" && (
-          <TreeScreen pdf={store.pdfDocument} name={store.pdfName} />
-        )}
+    <main className="relative min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted/20 bg-grid-pattern">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5" />
+      <div className="relative z-10 p-6 gap-6 flex flex-col h-[100dvh] max-h-[100dvh]">
+        <Header onClick={onHeaderClick} />
+        <div className="flex-1 flex overflow-hidden">
+          {store.screen === "dropzone" && (
+            <DropzoneScreen onDrop={onPDFDrop} onExample={onExamplePDFDrop} />
+          )}
+          {store.screen === "loading" && (
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center space-y-4">
+                <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mx-auto" />
+                <p className="text-lg text-muted-foreground">Processing PDF...</p>
+              </div>
+            </div>
+          )}
+          {store.screen === "pdf" && (
+            <TreeScreen pdf={store.pdfDocument} name={store.pdfName} />
+          )}
+        </div>
+        <Footer />
       </div>
-      <Footer />
     </main>
   );
 }
