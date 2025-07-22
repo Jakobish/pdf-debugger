@@ -1,6 +1,7 @@
 import * as core from "@hyzyla/pdfjs-core";
 import { useState } from "react";
 
+import { Button } from "@/components/button";
 import { TreeNodeDetails } from "@/app/_components/tree/tree-details";
 import { TreeNote } from "@/app/_components/tree/tree-node";
 import { TreeScreenMobile } from "@/app/_components/tree-screen.mobile";
@@ -13,6 +14,7 @@ export function TreeScreen(props: {
   name: string | null;
 }) {
   const [selected, setSelected] = useState<TreeNode | null>(null);
+  const [collapseAll, setCollapseAll] = useState(false);
   const isSmScreen = useMediaQuery("(max-width: 640px)");
   const walker = new PDFWalker({ pdf: props.pdf });
   const root = walker.start();
@@ -25,6 +27,9 @@ export function TreeScreen(props: {
     }
   };
 
+  const handleCollapseAll = () => {
+    setCollapseAll(!collapseAll);
+  };
   const { sidebarRef, startResizing, sidebarWidth } = useResizer();
 
   if (isSmScreen) {
@@ -35,6 +40,8 @@ export function TreeScreen(props: {
         root={root}
         selected={selected}
         onRowClick={onRowClick}
+        collapseAll={collapseAll}
+        onCollapseAll={handleCollapseAll}
       />
     );
   }
@@ -42,7 +49,22 @@ export function TreeScreen(props: {
   return (
     <div className="border-2 border-gray-200 rounded flex-1 flex overflow-hidden flex-row">
       <div className="overflow-y-auto sm:w-1/3 flex-1 p-2">
-        <TreeNote node={root} onClick={onRowClick} selected={selected} />
+        <div className="mb-3 flex justify-end">
+          <Button
+            onClick={handleCollapseAll}
+            variant="outline"
+            size="sm"
+            className="text-xs"
+          >
+            {collapseAll ? "Expand All" : "Collapse All"}
+          </Button>
+        </div>
+        <TreeNote 
+          node={root} 
+          onClick={onRowClick} 
+          selected={selected}
+          forceCollapsed={collapseAll}
+        />
       </div>
       <div
         className="min-w-[6px] cursor-col-resize border-l-2 border-gray-200"

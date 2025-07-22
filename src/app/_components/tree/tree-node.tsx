@@ -10,20 +10,27 @@ export function TreeNote(props: {
   node: TreeNode;
   selected: TreeNode | null;
   onClick: (node: TreeNode) => void;
+  forceCollapsed?: boolean;
 }) {
   const node = props.node;
 
   const expandLevel = usePDFDebuggerStore((state) => state.expandLevel());
   const [expanded, setExpanded] = useState(node.depth < expandLevel);
 
+  // Override expanded state when forceCollapsed is true
+  const isExpanded = props.forceCollapsed ? false : expanded;
   const onClick = () => {
-    setExpanded(!expanded);
+    if (!props.forceCollapsed) {
+      setExpanded(!expanded);
+    }
     props.onClick(node);
   };
 
   const onExpandClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setExpanded(!expanded);
+    if (!props.forceCollapsed) {
+      setExpanded(!expanded);
+    }
   };
 
   const onRefClick = (e: React.MouseEvent, node: TreeNode<core.Ref>) => {
@@ -63,12 +70,12 @@ export function TreeNote(props: {
       >
         <TreeRow
           node={node}
-          expanded={expanded}
+          expanded={isExpanded}
           onExpandClick={onExpandClick}
           onRefClick={onRefClick}
         />
       </div>
-      {expanded && (
+      {isExpanded && (
         <ul className="ml-6">
           {node.children.map((child) => (
             <li key={child.uniqueId}>
@@ -76,6 +83,7 @@ export function TreeNote(props: {
                 node={child}
                 onClick={props.onClick}
                 selected={props.selected}
+                forceCollapsed={props.forceCollapsed}
               />
             </li>
           ))}

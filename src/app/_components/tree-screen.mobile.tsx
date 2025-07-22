@@ -14,14 +14,27 @@ export function TreeScreenMobile(props: {
   root: TreeNode;
   selected: TreeNode | null;
   onRowClick: (node: TreeNode) => void;
+  collapseAll: boolean;
+  onCollapseAll: () => void;
 }) {
   return (
     <div className="flex-1 flex overflow-hidden flex-col">
+      <div className="p-2 flex justify-end border-b">
+        <Button
+          onClick={props.onCollapseAll}
+          variant="outline"
+          size="sm"
+          className="text-xs"
+        >
+          {props.collapseAll ? "Expand All" : "Collapse All"}
+        </Button>
+      </div>
       <div className="overflow-y-auto flex-1 p-2">
         <TreeNote
           node={props.root}
           onClick={props.onRowClick}
           selected={props.selected}
+          forceCollapsed={props.collapseAll}
         />
       </div>
       {props.selected && (
