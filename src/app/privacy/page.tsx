@@ -101,8 +101,8 @@ export default function PrivacyPage() {
               </p>
               <ul className="mt-4">
                 <li><strong>Email:</strong> <a href="mailto:hyzyla@gmail.com">hyzyla@gmail.com</a></li>
-                <li><strong>Telegram:</strong> <a href="https://t.me/hyzyla" target="_blank" rel="noopener noreferrer">@hyzyla</a></li>
-                <li><strong>GitHub:</strong> <a href="https://github.com/hyzyla/pdf-debugger" target="_blank" rel="noopener noreferrer">pdf-debugger</a></li>
+                <li><strong>Telegram:</strong> <a href="https://t.me/hyzyla" target=\"_blank" rel="noopener noreferrer">@hyzyla</a></li>
+                <li><strong>GitHub:</strong> <a href="https://github.com/hyzyla/pdf-debugger" target=\"_blank" rel="noopener noreferrer">pdf-debugger</a></li>
               </ul>
             </section>
           </div>
