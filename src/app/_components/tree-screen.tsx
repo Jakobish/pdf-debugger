@@ -6,7 +6,6 @@ import { Breadcrumb } from "@/app/_components/breadcrumb";
 import { SearchBar } from "@/app/_components/search-bar";
 import { StatsPanel } from "@/app/_components/stats-panel";
 import { Button } from "@/components/button";
-import { useKeyboardShortcut } from "@/components/keyboard-shortcut";
 import { TreeNodeDetails } from "@/app/_components/tree/tree-details";
 import { TreeNote } from "@/app/_components/tree/tree-node";
 import { TreeScreenMobile } from "@/app/_components/tree-screen.mobile";
@@ -41,25 +40,6 @@ export function TreeScreen(props: {
   const handleClearSearch = () => {
     setSearchQuery("");
   };
-
-  // Keyboard shortcuts
-  useKeyboardShortcut({
-    keys: ['ctrl', 'f'],
-    onTrigger: () => {
-      const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
-      searchInput?.focus();
-    }
-  });
-
-  useKeyboardShortcut({
-    keys: ['ctrl', 'e'],
-    onTrigger: handleExportJSON
-  });
-
-  useKeyboardShortcut({
-    keys: ['ctrl', 'shift', 'c'],
-    onTrigger: handleCollapseAll
-  });
 
   const onRowClick = (node: TreeNode) => {
     if (selected?.path === node.path) {
