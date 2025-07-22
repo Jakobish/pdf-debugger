@@ -362,3 +362,54 @@ export class PDFWalker {
     return root;
   }
 }
+
+// Search functionality
+export function filterTreeNodes(node: TreeNode, query: string): TreeNode {
+  const matchesQuery = (node: TreeNode): boolean => {
+    // Check node name
+    if (node.name && node.name.toLowerCase().includes(query)) return true;
+    
+    // Check node value for simple types
+    if (node.isString() && node.obj.toLowerCase().includes(query)) return true;
+    if (node.isName() && node.obj.name.toLowerCase().includes(query)) return true;
+    if (node.isNumber() && node.obj.toString().includes(query)) return true;
+    if (node.isBoolean() && node.obj.toString().includes(query)) return true;
+    
+    // Check reference
+    if (node.isRef() && `${node.obj.num}`.includes(query)) return true;
+    
+    // Check path
+    if (node.path.toLowerCase().includes(query)) return true;
+    
+    return false;
+  };
+
+  const filterNode = (node: TreeNode): TreeNode | null => {
+    const matches = matchesQuery(node);
+    const filteredChildren = node.children
+      .map(filterNode)
+      .filter((child): child is TreeNode => child !== null);
+
+    // Include node if it matches or has matching children
+    if (matches || filteredChildren.length > 0) {
+      const filteredNode = new TreeNode({
+        obj: node.obj,
+        name: node.name,
+        index: node.index,
+        depth: node.depth,
+        ref: node.ref,
+        parent: node.parent,
+        walker: node.walker,
+      });
+      
+      // Override children with filtered results
+      filteredNode._children = filteredChildren;
+      
+      return filteredNode;
+    }
+    
+    return null;
+  };
+
+  return filterNode(node) || node;
+}

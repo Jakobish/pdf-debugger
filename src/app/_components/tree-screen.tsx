@@ -1,8 +1,13 @@
 import * as core from "@hyzyla/pdfjs-core";
 import { Download } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
+import { Breadcrumb } from "@/app/_components/breadcrumb";
+import { HelpTooltip } from "@/app/_components/help-tooltip";
+import { SearchBar } from "@/app/_components/search-bar";
+import { StatsPanel } from "@/app/_components/stats-panel";
 import { Button } from "@/components/button";
+import { useKeyboardShortcut } from "@/components/keyboard-shortcut";
 import { TreeNodeDetails } from "@/app/_components/tree/tree-details";
 import { TreeNote } from "@/app/_components/tree/tree-node";
 import { TreeScreenMobile } from "@/app/_components/tree-screen.mobile";
@@ -16,9 +21,46 @@ export function TreeScreen(props: {
 }) {
   const [selected, setSelected] = useState<TreeNode | null>(null);
   const [collapseAll, setCollapseAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const isSmScreen = useMediaQuery("(max-width: 640px)");
   const walker = new PDFWalker({ pdf: props.pdf });
   const root = walker.start();
+
+  // Filter nodes based on search query
+  const filteredRoot = useMemo(() => {
+    if (!searchQuery.trim()) return root;
+    return filterTreeNodes(root, searchQuery.toLowerCase());
+  }, [root, searchQuery]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim()) {
+      setCollapseAll(false); // Expand when searching
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+  };
+
+  // Keyboard shortcuts
+  useKeyboardShortcut({
+    keys: ['ctrl', 'f'],
+    onTrigger: () => {
+      const searchInput = document.querySelector('input[placeholder*="Search"]') as HTMLInputElement;
+      searchInput?.focus();
+    }
+  });
+
+  useKeyboardShortcut({
+    keys: ['ctrl', 'e'],
+    onTrigger: handleExportJSON
+  });
+
+  useKeyboardShortcut({
+    keys: ['ctrl', 'shift', 'c'],
+    onTrigger: handleCollapseAll
+  });
 
   const onRowClick = (node: TreeNode) => {
     if (selected?.path === node.path) {
@@ -53,20 +95,34 @@ export function TreeScreen(props: {
       <TreeScreenMobile
         pdf={props.pdf}
         name={props.name}
-        root={root}
+        root={filteredRoot}
         selected={selected}
         onRowClick={onRowClick}
         collapseAll={collapseAll}
         onCollapseAll={handleCollapseAll}
         onExportJSON={handleExportJSON}
+        searchQuery={searchQuery}
+        onSearch={handleSearch}
+        onClearSearch={handleClearSearch}
       />
     );
   }
 
   return (
-    <div className="border-2 border-gray-200 rounded flex-1 flex overflow-hidden flex-row">
+    <div className="flex-1 flex overflow-hidden flex-col gap-4">
+      <StatsPanel root={root} />
+      
+      <div className="border-2 border-gray-200 rounded flex-1 flex overflow-hidden flex-row">
       <div className="overflow-y-auto sm:w-1/3 flex-1 p-2">
-        <div className="mb-3 flex justify-end gap-2">
+        <div className="mb-4 space-y-3">
+          <SearchBar
+            onSearch={handleSearch}
+            onClear={handleClearSearch}
+            placeholder="Search objects, keys, values..."
+          />
+          
+          <div className="flex justify-end gap-2">
+          <HelpTooltip />
           <Button
             onClick={handleExportJSON}
             variant="outline"
@@ -84,14 +140,23 @@ export function TreeScreen(props: {
           >
             {collapseAll ? "Expand All" : "Collapse All"}
           </Button>
+          </div>
+          
+          <Breadcrumb
+            selectedNode={selected}
+            onNodeClick={onRowClick}
+          />
         </div>
+        
         <TreeNote 
-          node={root} 
+          node={filteredRoot} 
           onClick={onRowClick} 
           selected={selected}
           forceCollapsed={collapseAll}
         />
       </div>
+      </div>
+    </div>
       <div
         className="min-w-[6px] cursor-col-resize border-l-2 border-gray-200"
         onMouseDown={startResizing}
@@ -105,4 +170,3 @@ export function TreeScreen(props: {
       </div>
     </div>
   );
-}

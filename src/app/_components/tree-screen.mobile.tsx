@@ -18,10 +18,27 @@ export function TreeScreenMobile(props: {
   collapseAll: boolean;
   onCollapseAll: () => void;
   onExportJSON: () => void;
+  searchQuery: string;
+  onSearch: (query: string) => void;
+  onClearSearch: () => void;
 }) {
+  const { SearchBar } = require("@/app/_components/search-bar");
+  const { StatsPanel } = require("@/app/_components/stats-panel");
+  const { Breadcrumb } = require("@/app/_components/breadcrumb");
+
   return (
     <div className="flex-1 flex overflow-hidden flex-col">
+      <div className="p-2 border-b">
+        <StatsPanel root={props.root} />
+      </div>
+      
       <div className="p-2 flex justify-end gap-2 border-b">
+        <SearchBar
+          onSearch={props.onSearch}
+          onClear={props.onClearSearch}
+          placeholder="Search..."
+          className="flex-1 mr-2"
+        />
         <Button
           onClick={props.onExportJSON}
           variant="outline"
@@ -41,6 +58,11 @@ export function TreeScreenMobile(props: {
         </Button>
       </div>
       <div className="overflow-y-auto flex-1 p-2">
+        <Breadcrumb
+          selectedNode={props.selected}
+          onNodeClick={props.onRowClick}
+          className="mb-4"
+        />
         <TreeNote
           node={props.root}
           onClick={props.onRowClick}

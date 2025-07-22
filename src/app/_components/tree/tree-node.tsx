@@ -41,15 +41,15 @@ export function TreeNote(props: {
     );
     if (!element) return;
 
-    element.scrollIntoView();
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
 
     // highlight the element
-    element.classList.add("bg-yellow-200");
+    element.classList.add("bg-yellow-200", "dark:bg-yellow-800");
     element.classList.add("bg-opacity-100");
     setTimeout(() => {
-      element.classList.remove("bg-yellow-200");
+      element.classList.remove("bg-yellow-200", "dark:bg-yellow-800");
       element.classList.add("bg-opacity-0");
-    }, 1000);
+    }, 2000);
   };
 
   const ref = props.node.ref;
