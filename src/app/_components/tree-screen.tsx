@@ -3,7 +3,6 @@ import { Download } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { Breadcrumb } from "@/app/_components/breadcrumb";
-import { HelpTooltip } from "@/app/_components/help-tooltip";
 import { SearchBar } from "@/app/_components/search-bar";
 import { StatsPanel } from "@/app/_components/stats-panel";
 import { Button } from "@/components/button";
@@ -122,7 +121,6 @@ export function TreeScreen(props: {
           />
           
           <div className="flex justify-end gap-2">
-          <HelpTooltip />
           <Button
             onClick={handleExportJSON}
             variant="outline"
