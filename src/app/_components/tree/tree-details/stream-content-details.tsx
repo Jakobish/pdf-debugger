@@ -7,7 +7,7 @@ import { CodeBlock } from "@/components/code-block";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { StreamContent } from "@/lib/pdf-walker";
 import {
-  frmoByteArrayToUnicode,
+  fromByteArrayToUnicode,
   fromByteArrayToBase64,
   fromByteArrayToHexString,
 } from "@/lib/utils";
@@ -119,7 +119,7 @@ export function StreamContentDetails({ node }: DetailProps<StreamContent>) {
           <TabsTrigger value="hex">Hex</TabsTrigger>
         </TabsList>
         <TabsContent value="unicode">
-          <CodeBlock code={frmoByteArrayToUnicode(bytes)} language="text" />
+          <CodeBlock code={fromByteArrayToUnicode(bytes)} language="text" />
         </TabsContent>
         <TabsContent value="base64">
           <CodeBlock code={fromByteArrayToBase64(bytes)} language="text" />
